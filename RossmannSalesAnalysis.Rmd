@@ -4,6 +4,9 @@ output: rmarkdown::github_document
 ---
 
 ## R Markdown
+```{r, echo=FALSE}
+knitr::opts_chunk$set(error = TRUE)
+```
 
 
 
@@ -20,7 +23,6 @@ ggplot(data = RossmannSalesData,aes(x=Sales)) + geom_histogram(aes(y= ..density.
 
 ```{r}
 #plots
-install.packages("lmtest")
 library(lmtest)
 hist(Customers, probability = TRUE, ylim = c(0, 0.0020))
 lines(density(Customers),col = "chocolate3",lwd = 2)
@@ -53,7 +55,7 @@ hist(log(Sales),xlab="Sales",ylab="Frequency of Sales",border="black",col = "lig
 ```
 
 ```{r}
-hist(d$Customers,xlab="Customers",ylab="Frequency of Customers",border="black",col = "Green")
+hist(RossmannSalesData$Customers,xlab="Customers",ylab="Frequency of Customers",border="black",col = "Green")
 ```
 
 ```{r}
@@ -62,7 +64,6 @@ hist(log(Customers),xlab="Customers",ylab="Frequency of Customers",border="black
 
 ```{r}
 #POOLED MODEL
-install.packages("plm")
 library(plm)
 pool <- plm(Sales~as.factor(Assortment)+as.factor(Promo)+as.factor(Promo2)+as.factor(MONTH)+as.factor(YEAR)+Promo*CompetitionDistance,index = c("Store"),data = RossmannSalesData,model = "pooling")
 ```
@@ -77,8 +78,8 @@ hist(pool$residuals,col = "orange")
 ```
 
 ```{r}
-RossmannSalesData[Promo==1]="YES"
-RossmannSalesData[Promo==0]="NO"
+RossmannSalesData$Promo <- ifelse(Promo==1, "YES", "NO")
+
 
 class(RossmannSalesData$Promo)
 any(table(RossmannSalesData$Store, RossmannSalesData$YEAR)!=1)
@@ -92,7 +93,7 @@ with(RossmannSalesData, levels(Store)[tapply(YEAR, Store,
 
 ```{r}
 #Pool model
-pool_customer <- plm(Customers~as.factor(Assortment)+as.factor(Promo)+as.factor(Promo2)+as.factor(MONTH)+as.factor(YEAR)+Promo*CompetitionDistance,index = "Store",data = d,model = "pooling")
+pool_customer <- plm(Customers~as.factor(Assortment)+as.factor(Promo)+as.factor(Promo2)+as.factor(MONTH)+as.factor(YEAR)+Promo*CompetitionDistance,index = "Store",data = RossmannSalesData,model = "pooling")
 summary(pool_customer)
 ```
 
@@ -111,12 +112,12 @@ hist(w$residuals,col = "light green")
 ```
 
 ```{r}
-d <-  plm(Customers~as.factor(Promo)+as.factor(YEAR)+as.factor(SchoolHoliday),index = "Store",data = RossmannSalesData,model = "within")
-summary(d)
+plmModel <-  plm(Customers~as.factor(Promo)+as.factor(YEAR)+as.factor(SchoolHoliday),index = "Store",data = RossmannSalesData,model = "within")
+summary(plmModel)
 ```
 
 ```{r}
-hist(d$residuals,col = "Purple")
+hist(plmModel$residuals,col = "Purple")
 ```
 
 ```{r}

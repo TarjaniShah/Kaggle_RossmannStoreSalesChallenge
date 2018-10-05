@@ -206,22 +206,13 @@ hist(pool$residuals,col = "orange")
 ![](RossmannSalesAnalysis_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
 ``` r
-RossmannSalesData[Promo==1]="YES"
-```
+RossmannSalesData$Promo <- ifelse(Promo==1, "YES", "NO")
 
-    ## Error in `[<-.data.frame`(`*tmp*`, Promo == 1, value = "YES"): duplicate subscripts for columns
 
-``` r
-RossmannSalesData[Promo==0]="NO"
-```
-
-    ## Error in `[<-.data.frame`(`*tmp*`, Promo == 0, value = "NO"): duplicate subscripts for columns
-
-``` r
 class(RossmannSalesData$Promo)
 ```
 
-    ## [1] "integer"
+    ## [1] "character"
 
 ``` r
 any(table(RossmannSalesData$Store, RossmannSalesData$YEAR)!=1)
@@ -239,22 +230,81 @@ with(RossmannSalesData, levels(Store)[tapply(YEAR, Store,
 
 ``` r
 #Pool model
-pool_customer <- plm(Customers~as.factor(Assortment)+as.factor(Promo)+as.factor(Promo2)+as.factor(MONTH)+as.factor(YEAR)+Promo*CompetitionDistance,index = "Store",data = d,model = "pooling")
-```
-
-    ## Error in row.names(data): object 'd' not found
-
-``` r
+pool_customer <- plm(Customers~as.factor(Assortment)+as.factor(Promo)+as.factor(Promo2)+as.factor(MONTH)+as.factor(YEAR)+Promo*CompetitionDistance,index = "Store",data = RossmannSalesData,model = "pooling")
 summary(pool_customer)
 ```
 
-    ## Error in summary(pool_customer): object 'pool_customer' not found
+    ## Pooling Model
+    ## 
+    ## Call:
+    ## plm(formula = Customers ~ as.factor(Assortment) + as.factor(Promo) + 
+    ##     as.factor(Promo2) + as.factor(MONTH) + as.factor(YEAR) + 
+    ##     Promo * CompetitionDistance, data = RossmannSalesData, model = "pooling", 
+    ##     index = "Store")
+    ## 
+    ## Unbalanced Panel: n = 1112, T = 592-942, N = 842152
+    ## 
+    ## Residuals:
+    ##      Min.   1st Qu.    Median   3rd Qu.      Max. 
+    ## -1516.956  -211.310   -65.815   124.645  6472.090 
+    ## 
+    ## Coefficients: (1 dropped because of singularities)
+    ##                                 Estimate  Std. Error   t-value  Pr(>|t|)
+    ## (Intercept)                   7.6534e+02  1.5230e+00  502.5118 < 2.2e-16
+    ## as.factor(Assortment)b        1.2891e+03  3.9707e+00  324.6541 < 2.2e-16
+    ## as.factor(Assortment)c        2.6310e+01  7.9091e-01   33.2660 < 2.2e-16
+    ## as.factor(Promo)YES           1.5179e+02  9.5375e-01  159.1465 < 2.2e-16
+    ## as.factor(Promo2)1           -1.7767e+02  7.8520e-01 -226.2748 < 2.2e-16
+    ## as.factor(MONTH)2             1.3994e+01  1.7486e+00    8.0032 1.214e-15
+    ## as.factor(MONTH)3             3.2019e+01  1.7182e+00   18.6358 < 2.2e-16
+    ## as.factor(MONTH)4             4.9121e+01  1.7402e+00   28.2268 < 2.2e-16
+    ## as.factor(MONTH)5             5.4771e+01  1.7493e+00   31.3104 < 2.2e-16
+    ## as.factor(MONTH)6             3.9266e+01  1.7357e+00   22.6228 < 2.2e-16
+    ## as.factor(MONTH)7             2.2357e+01  1.7205e+00   12.9947 < 2.2e-16
+    ## as.factor(MONTH)8             2.3433e+01  1.9798e+00   11.8360 < 2.2e-16
+    ## as.factor(MONTH)9             1.9363e+01  2.0029e+00    9.6671 < 2.2e-16
+    ## as.factor(MONTH)10            2.7006e+01  1.9920e+00   13.5574 < 2.2e-16
+    ## as.factor(MONTH)11            4.6483e+01  2.0145e+00   23.0746 < 2.2e-16
+    ## as.factor(MONTH)12            1.6198e+02  2.0261e+00   79.9447 < 2.2e-16
+    ## as.factor(YEAR)2014           9.7993e+00  8.8774e-01   11.0384 < 2.2e-16
+    ## as.factor(YEAR)2015           1.5292e-01  1.0817e+00    0.1414    0.8876
+    ## CompetitionDistance          -8.5667e-03  6.7187e-05 -127.5056 < 2.2e-16
+    ## PromoYES:CompetitionDistance -1.1226e-04  1.0015e-04   -1.1209    0.2623
+    ##                                 
+    ## (Intercept)                  ***
+    ## as.factor(Assortment)b       ***
+    ## as.factor(Assortment)c       ***
+    ## as.factor(Promo)YES          ***
+    ## as.factor(Promo2)1           ***
+    ## as.factor(MONTH)2            ***
+    ## as.factor(MONTH)3            ***
+    ## as.factor(MONTH)4            ***
+    ## as.factor(MONTH)5            ***
+    ## as.factor(MONTH)6            ***
+    ## as.factor(MONTH)7            ***
+    ## as.factor(MONTH)8            ***
+    ## as.factor(MONTH)9            ***
+    ## as.factor(MONTH)10           ***
+    ## as.factor(MONTH)11           ***
+    ## as.factor(MONTH)12           ***
+    ## as.factor(YEAR)2014          ***
+    ## as.factor(YEAR)2015             
+    ## CompetitionDistance          ***
+    ## PromoYES:CompetitionDistance    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Total Sum of Squares:    1.3566e+11
+    ## Residual Sum of Squares: 1.0677e+11
+    ## R-Squared:      0.2129
+    ## Adj. R-Squared: 0.21288
+    ## F-statistic: 11988.9 on 19 and 842132 DF, p-value: < 2.22e-16
 
 ``` r
 hist(pool_customer$residuals,col = "light green")
 ```
 
-    ## Error in hist(pool_customer$residuals, col = "light green"): object 'pool_customer' not found
+![](RossmannSalesAnalysis_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 ``` r
 #Fixed models
@@ -276,20 +326,20 @@ summary(w)
     ## -16407.41   -893.90   -132.83    704.86  31708.23 
     ## 
     ## Coefficients: (1 dropped because of singularities)
-    ##                             Estimate Std. Error  t-value Pr(>|t|)    
-    ## as.factor(Promo)1         2.2666e+03 4.0541e+00 559.0857   <2e-16 ***
-    ## as.factor(MONTH)2         9.5833e+01 7.4315e+00  12.8955   <2e-16 ***
-    ## as.factor(MONTH)3         3.3611e+02 7.3023e+00  46.0282   <2e-16 ***
-    ## as.factor(MONTH)4         4.3657e+02 7.3962e+00  59.0254   <2e-16 ***
-    ## as.factor(MONTH)5         5.2179e+02 7.4345e+00  70.1848   <2e-16 ***
-    ## as.factor(MONTH)6         4.7295e+02 7.3767e+00  64.1136   <2e-16 ***
-    ## as.factor(MONTH)7         2.9843e+02 7.3141e+00  40.8019   <2e-16 ***
-    ## as.factor(MONTH)8         9.2742e+01 8.3019e+00  11.1712   <2e-16 ***
-    ## as.factor(MONTH)9         2.7470e+00 8.4031e+00   0.3269   0.7437    
-    ## as.factor(MONTH)10        7.0979e+01 8.3550e+00   8.4955   <2e-16 ***
-    ## as.factor(MONTH)11        4.9741e+02 8.4503e+00  58.8631   <2e-16 ***
-    ## as.factor(MONTH)12        2.1046e+03 8.5029e+00 247.5168   <2e-16 ***
-    ## Promo:CompetitionDistance 1.0026e-02 4.2601e-04  23.5337   <2e-16 ***
+    ##                                Estimate Std. Error  t-value Pr(>|t|)    
+    ## as.factor(Promo)YES          2.2666e+03 4.0541e+00 559.0857   <2e-16 ***
+    ## as.factor(MONTH)2            9.5833e+01 7.4315e+00  12.8955   <2e-16 ***
+    ## as.factor(MONTH)3            3.3611e+02 7.3023e+00  46.0282   <2e-16 ***
+    ## as.factor(MONTH)4            4.3657e+02 7.3962e+00  59.0254   <2e-16 ***
+    ## as.factor(MONTH)5            5.2179e+02 7.4345e+00  70.1848   <2e-16 ***
+    ## as.factor(MONTH)6            4.7295e+02 7.3767e+00  64.1136   <2e-16 ***
+    ## as.factor(MONTH)7            2.9843e+02 7.3141e+00  40.8019   <2e-16 ***
+    ## as.factor(MONTH)8            9.2742e+01 8.3019e+00  11.1712   <2e-16 ***
+    ## as.factor(MONTH)9            2.7470e+00 8.4031e+00   0.3269   0.7437    
+    ## as.factor(MONTH)10           7.0979e+01 8.3550e+00   8.4955   <2e-16 ***
+    ## as.factor(MONTH)11           4.9741e+02 8.4503e+00  58.8631   <2e-16 ***
+    ## as.factor(MONTH)12           2.1046e+03 8.5029e+00 247.5168   <2e-16 ***
+    ## PromoYES:CompetitionDistance 1.0026e-02 4.2601e-04  23.5337   <2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -306,8 +356,8 @@ hist(w$residuals,col = "light green")
 ![](RossmannSalesAnalysis_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 ``` r
-d <-  plm(Customers~as.factor(Promo)+as.factor(YEAR)+as.factor(SchoolHoliday),index = "Store",data = RossmannSalesData,model = "within")
-summary(d)
+plmModel <-  plm(Customers~as.factor(Promo)+as.factor(YEAR)+as.factor(SchoolHoliday),index = "Store",data = RossmannSalesData,model = "within")
+summary(plmModel)
 ```
 
     ## Oneway (individual) effect Within Model
@@ -325,7 +375,7 @@ summary(d)
     ## 
     ## Coefficients:
     ##                            Estimate Std. Error t-value  Pr(>|t|)    
-    ## as.factor(Promo)1         152.91237    0.32236 474.346 < 2.2e-16 ***
+    ## as.factor(Promo)YES       152.91237    0.32236 474.346 < 2.2e-16 ***
     ## as.factor(YEAR)2014         4.22383    0.36751  11.493 < 2.2e-16 ***
     ## as.factor(YEAR)2015        -9.20164    0.41818 -22.004 < 2.2e-16 ***
     ## as.factor(SchoolHoliday)1  15.89563    0.40597  39.154 < 2.2e-16 ***
@@ -339,7 +389,7 @@ summary(d)
     ## F-statistic: 57128.1 on 4 and 843219 DF, p-value: < 2.22e-16
 
 ``` r
-hist(d$residuals,col = "Purple")
+hist(plmModel$residuals,col = "Purple")
 ```
 
 ![](RossmannSalesAnalysis_files/figure-markdown_github/unnamed-chunk-22-1.png)
@@ -374,7 +424,7 @@ summary(random)
     ## Coefficients:
     ##                      Estimate Std. Error t-value  Pr(>|t|)    
     ## (Intercept)         5797.6865    71.3923  81.209 < 2.2e-16 ***
-    ## as.factor(Promo)1   2309.2197     3.4686 665.748 < 2.2e-16 ***
+    ## as.factor(Promo)YES 2309.2197     3.4686 665.748 < 2.2e-16 ***
     ## as.factor(YEAR)2014  161.3380     3.9561  40.782 < 2.2e-16 ***
     ## as.factor(YEAR)2015  202.9991     4.4975  45.136 < 2.2e-16 ***
     ## ---
