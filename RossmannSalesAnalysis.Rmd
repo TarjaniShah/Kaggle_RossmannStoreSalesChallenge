@@ -1,16 +1,10 @@
 ---
 title: "Rossmann Sales Analysis"
-output: html_document
+output: rmarkdown::github_document
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 ## R Markdown
 
-
-You can also embed plots, for example:
 
 
 ```{r}
