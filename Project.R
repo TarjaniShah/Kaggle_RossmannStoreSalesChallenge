@@ -39,8 +39,7 @@ pool <- plm(Sales~as.factor(Assortment)+as.factor(Promo)+as.factor(Promo2)+as.fa
  #values means for this model to work plm require id and year to be unique
 summary(pool)
 hist(pool$residuals,col = "orange")
-RossmannSalesData[Promo==1]="YES"
-RossmannSalesData[Promo==0]="NO"
+RossmannSalesData$Promo <- ifelse(Promo==1, "YES", "NO")
 
 class(RossmannSalesData$Promo)
 any(table(RossmannSalesData$Store, RossmannSalesData$YEAR)!=1)
@@ -50,7 +49,7 @@ with(RossmannSalesData, levels(Store)[tapply(YEAR, Store,
                                function(x) any(table(x) > 1))])
 
 #POOLED MODEL customer
-pool_customer <- plm(Customers~as.factor(Assortment)+as.factor(Promo)+as.factor(Promo2)+as.factor(MONTH)+as.factor(YEAR)+Promo*CompetitionDistance,index = "Store",data = d,model = "pooling")
+pool_customer <- plm(Customers~as.factor(Assortment)+as.factor(Promo)+as.factor(Promo2)+as.factor(MONTH)+as.factor(YEAR)+Promo*CompetitionDistance,index = "Store",data = RossmannSalesData,model = "pooling")
 summary(pool_customer)
 hist(pool_customer$residuals,col = "light green")
 
@@ -59,9 +58,9 @@ w <- plm(Sales~as.factor(Promo)+as.factor(MONTH)+Promo*CompetitionDistance,index
 summary(w)
 hist(w$residuals,col = "light green")
 
-RossmannSalesData <-  plm(Customers~as.factor(Promo)+as.factor(YEAR)+as.factor(SchoolHoliday),index = "Store",data = RossmannSalesData,model = "within")
-summary(RossmannSalesData)
-hist(d$residuals,col = "Purple")
+plmModel <-  plm(Customers~as.factor(Promo)+as.factor(YEAR)+as.factor(SchoolHoliday),index = "Store",data = RossmannSalesData,model = "within")
+summary(plmModel)
+hist(plmModel$residuals,col = "Purple")
 
 ##Random effect models
 random <-  plm(Sales~as.factor(Promo)+as.factor(YEAR),data = RossmannSalesData,index = c("Store"),model = "random")
